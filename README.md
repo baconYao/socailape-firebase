@@ -11,3 +11,9 @@ I cloned it from [Classed](https://www.youtube.com/watch?v=-vo7cu0xP4I) youtube 
 ```bash
 $ firebase serve
 ```
+
+### Deploy to Firebase Functions
+
+```bash
+$ firebase deploy --only functions:api
+```

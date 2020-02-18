@@ -5,39 +5,37 @@ admin.initializeApp({
   credential: admin.credential.cert(require('./key/admin.json'))
 });
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-exports.helloWorld = functions.https.onRequest((request, response) => {
- response.send("Hello World");
-});
+const express = require('express');
+const app = express();
 
-exports.getScreams = functions.https.onRequest((req, res) => {
+app.get('/screams', (req, res) => {
   admin
-    .firestore()
-    .collection('screams')
-    .get()
-    .then( data => {
-      let screams = [];
-      data.forEach( doc => {
-        screams.push(doc.data());
-      })
-      return res.json(screams);
+  .firestore()
+  .collection('screams')
+  .orderBy('createdAt', 'desc')
+  .get()
+  .then( data => {
+    let screams = [];
+    data.forEach( doc => {
+      screams.push({
+        screamId: doc.id,
+        body: doc.data().body,
+        userHandle: doc.data().userHandle,
+        createdAt: doc.data().createdAt
+      });
     })
-    .catch(
-      err => console.error(err)
-    )
+    return res.json(screams);
+  })
+  .catch(
+    err => console.error(err)
+  )
 });
 
-exports.createScream = functions.https.onRequest((req, res) => {
-  if(req.method !== 'POST') {
-    return res.status(400).json({ error: 'Method not allowed' })
-  }
-  
-  const newScream = {
+app.post('/screams', (req, res) => { 
+ const newScream = {
     body: req.body.body,
     userHandle: req.body.userHandle,
-    createdAt: admin.firestore.Timestamp.fromDate(new Date())
+    createdAt: new Date().toISOString()
   };
   
   admin
@@ -45,7 +43,7 @@ exports.createScream = functions.https.onRequest((req, res) => {
     .collection('screams')
     .add(newScream)
     .then( doc => {
-      res.json({ message: `document ${doc.id} created successfully` })
+      return res.json({ message: `document ${doc.id} created successfully` })
     })
     .catch( err => {
         res.status(500).json({ error: 'something went wrong' })
@@ -53,3 +51,7 @@ exports.createScream = functions.https.onRequest((req, res) => {
       }
     )
 });
+
+// https://baseurl.com/api/
+// 若不指定 function 要被 deploy 到哪個 region，則預設會是 us-central1
+exports.api = functions.region('asia-east2').https.onRequest(app);
