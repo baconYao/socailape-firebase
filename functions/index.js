@@ -4,7 +4,7 @@ const app = require('express')();
 
 // handlers
 const { getAllScreams, postOneScream } = require('./handlers/scream');
-const { signup, login, uploadImage } = require('./handlers/user');
+const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./handlers/user');
 // middlewares
 const fbAuth = require('./util/fbAuth');
 
@@ -16,6 +16,8 @@ app.post('/screams', fbAuth, postOneScream);
 app.post('/signup', signup);
 app.post('/login', login);
 app.post('/user/image', fbAuth, uploadImage);
+app.post('/user', fbAuth, addUserDetails);
+app.get('/user', fbAuth, getAuthenticatedUser);
 
 
 // https://baseurl.com/api/
