@@ -1,3 +1,4 @@
+// 存在 firestore 內的 collection & properties
 let db = {
   users: [
     {
@@ -19,10 +20,19 @@ let db = {
       likeCount: 5,
       commentCount: 2
     }
+  ],
+  comments: [
+    {
+      userHandle: 'user',
+      screamId: "saihdc248192",
+      body: 'nice one mate!',
+      createdAt: '2020-02-18T15:26:19.737Z',
+    }
   ]
 }
 
 let userDetails = {
+  // Redux data
   credentials: [
     {
       userId: 'uhdnscndksm',
