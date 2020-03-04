@@ -9,7 +9,8 @@ const {
   getScream,
   commentOnScream,
   likeScream,
-  unlikeScream 
+  unlikeScream,
+  deleteScream
 } = require('./handlers/scream');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./handlers/user');
 // middlewares
@@ -19,7 +20,7 @@ const fbAuth = require('./util/fbAuth');
 app.get('/screams', getAllScreams);
 app.post('/screams', fbAuth, postOneScream);
 app.get('/scream/:screamId', getScream);
-// TODO: delete scream
+app.delete('/scream/:screamId', fbAuth, deleteScream);
 app.post('/scream/:screamId/like', fbAuth, likeScream);
 app.post('/scream/:screamId/unlike', fbAuth, unlikeScream);
 app.post('/scream/:screamId/comment', fbAuth, commentOnScream);
