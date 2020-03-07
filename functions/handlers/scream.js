@@ -208,7 +208,7 @@ exports.deleteScream = (req, res) => {
       }
     })
     .then(() => {
-      res.json({ message: 'Scream deleted successfully' });
+      return res.json({ message: 'Scream deleted successfully' });
     })
     .catch(err => {
       console.error(err);
