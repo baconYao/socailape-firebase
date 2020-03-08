@@ -12,7 +12,15 @@ const {
   unlikeScream,
   deleteScream
 } = require('./handlers/scream');
-const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./handlers/user');
+const { 
+  signup,
+  login,
+  uploadImage,
+  addUserDetails,
+  getAuthenticatedUser,
+  getUserDetails,
+  markNotificationsread
+} = require('./handlers/user');
 const { db } = require("./util/admin");
 // middlewares
 const fbAuth = require('./util/fbAuth');
@@ -33,6 +41,8 @@ app.post('/login', login);
 app.post('/user/image', fbAuth, uploadImage);
 app.post('/user', fbAuth, addUserDetails);
 app.get('/user', fbAuth, getAuthenticatedUser);
+app.get('/user/:handle', getUserDetails);
+app.post('/notifications', fbAuth, markNotificationsread);
 
 // https://baseurl.com/api/
 // 若不指定 function 要被 deploy 到哪個 region，則預設會是 us-central1
