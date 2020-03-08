@@ -165,10 +165,10 @@ exports.uploadImage = (req, res) => {
   let imageToBeUploaded = {};
 
   busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-    console.log("0)))))))))")
-    console.log(fieldname);    // form 的 field 名稱 
-    console.log(filename);
-    console.log(mimetype);
+    // console.log("0)))))))))")
+    // console.log(fieldname);    // form 的 field 名稱 
+    // console.log(filename);
+    // console.log(mimetype);
     if(mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
       return res.status(400).json({ error: 'Wrong file type submitted' });
     }

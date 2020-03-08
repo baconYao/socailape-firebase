@@ -117,3 +117,62 @@ exports.createNotificationOnComment = functions
       })
       .catch(err => console.error(err));
   });
+
+/*
+  使用者更新其照片時，要將他所有 scream 內的 userImage url 一併更新
+*/
+exports.onUserChangeImage = functions
+  .region(REGION)
+  .firestore.document('users/{userId}')
+  .onUpdate((change) => {
+    console.log(change.before.data());
+    console.log(change.after.data());
+    if(change.before.data().imageUrl !== change.after.data().imageUrl) {
+      console.log('Image has changed');
+      const batch = db.batch();
+      return db
+        .collection('screams')
+        .where('userHandle', '==', change.before.data().handle)
+        .get()
+        .then((data) => {
+          data.forEach((doc) => {
+            const scream = db.doc(`/screams/${doc.id}`);
+            batch.update(scream, { userImage: change.after.data().imageUrl });
+          });
+          return batch.commit();
+        })
+        .catch((err) => console.error(err));
+    }
+    return true;
+  });
+
+/*
+  使用者更刪除其 scream 時，要將所有和此 scream 關聯內的 like, comments and notifications 一併刪除
+*/
+exports.onScreamDelete = functions
+  .region(REGION)
+  .firestore.document('screams/{screamId}')
+  .onDelete((snapshot, context) => {
+    const screamId = context.params.screamId;
+    const batch = db.batch();
+    return db.collection('comments').where('screamId', '==', screamId).get()
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/comments/${doc.id}`));
+        });
+        return db.collection('likes').where('screamId', '==', screamId).get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/likes/${doc.id}`));
+        });
+        return db.collection('notifications').where('screamId', '==', screamId).get();
+      })
+      .then((data) => {
+        data.forEach((doc) => {
+          batch.delete(db.doc(`/notifications/${doc.id}`));
+        });
+        return batch.commit();
+      })
+      .catch((err) => console.error(err));
+  })
